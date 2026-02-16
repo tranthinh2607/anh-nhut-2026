@@ -1304,12 +1304,12 @@
             // Simple approach: Play audio loop or single file
             countdownAudio.play().catch(e => console.log("Countdown audio failed:", e));
 
-            // --- AUDIO PRE-WARM FIX ---
-            // Start playing the music SILENTLY right now to capture the user interaction
+            // --- CRITICAL FIX: Pre-play BG Music Silently ---
+            // To ensure MUSIC.mp3 works exactly like 10s.mp3, we MUST start it HERE (with 10s.mp3).
+            // We set volume to 0 so it doesn't overlap, then unmute later.
             if (bgMusic) {
                 bgMusic.volume = 0;
-                bgMusic.muted = false;
-                bgMusic.play().catch(e => console.log("Bg music pre-warm failed:", e));
+                bgMusic.play().catch(e => console.log("Bg music pre-start failed:", e));
             }
 
             const timer = setInterval(() => {
@@ -1326,9 +1326,10 @@
                     document.querySelectorAll('.lantern-container').forEach(el => el.style.display = 'flex');
                     document.querySelectorAll('.firecracker-string').forEach(el => el.style.display = 'flex');
 
-                    // Play Music (Unmute and restart)
+                    // Play Music (Unmute)
+                    // The music is already playing (silently), so we just turn up the volume.
                     bgMusic.volume = 1.0;
-                    bgMusic.currentTime = 0;
+                    bgMusic.currentTime = 0; // Restart from beginning
                     bgMusic.play().catch(e => console.log("Audio play failed:", e));
 
                     // Trigger fireworks immediately with HNY
